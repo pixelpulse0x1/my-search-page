@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  my-search-page:
+    build: .
+    image: pixelpulse01/my-search-page:v0.2.3.0
+    container_name: my-search-page
+    restart: unless-stopped
+
+    environment:
+      - TZ=Asia/Shanghai
+      - SECRET_KEY=change-me-to-random-string
+
+    ports:
+      - "9050:3150"
+
+    volumes:
+      - /opt/docker-stacks/my-search-page:/data

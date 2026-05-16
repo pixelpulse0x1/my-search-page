@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>my-search-page</title>
+  <meta name="referrer" content="no-referrer" />
+  <link rel="icon" type="image/png" href="/static/favicon/favicon-96x96.png" sizes="96x96" />
+  <link rel="icon" type="image/svg+xml" href="/static/favicon/favicon.svg" />
+  <link rel="shortcut icon" href="/static/favicon/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/static/favicon/apple-touch-icon.png" />
+  <meta name="apple-mobile-web-app-title" content="my-search-page" />
+  <link rel="manifest" href="/static/favicon/site.webmanifest" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.css" />
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+
+  <!-- Background Container -->
+  <div class="background-container">
+    <div class="main-content">
+
+      <!-- Welcome / Quote -->
+      <div id="welcomeMessage" class="welcome-message"></div>
+
+      <!-- Nixie Clock -->
+      <div id="nixieClock" class="nixie-clock"></div>
+
+      <!-- Date -->
+      <div class="info-container">
+        <div id="dateDisplay" class="date-display"></div>
+      </div>
+
+      <!-- Search Form -->
+      <form id="searchForm" class="search-container">
+        <input type="text" id="searchInput" class="search-input"
+               data-i18n-placeholder="Search placeholder" placeholder="输入内容，一键多站搜索..." autocomplete="off" />
+        <button type="submit" class="search-button" aria-label="搜索">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+          </svg>
+        </button>
+      </form>
+
+      <!-- Search Engine List -->
+      <div id="engineList" class="engine-list"></div>
+
+      <!-- Bookmarks Table -->
+      <div id="bookmarksSection" class="bookmarks-section">
+        <table id="bookmarksTable" class="bookmarks-table">
+          <tbody id="bookmarksList"></tbody>
+        </table>
+      </div>
+
+      <!-- Memo Widget -->
+      <div id="memoSection" class="memo-section">
+        <textarea id="memoTextarea" class="memo-textarea"
+                  data-i18n-placeholder="Memo placeholder" placeholder="随手记录..."></textarea>
+        <div id="memoStatus" class="memo-status"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Weather Widget (bottom-right) -->
+  <div id="weatherWidget" class="weather-widget">
+    <div class="weather-widget-main">
+      <img id="weatherIcon" class="weather-icon" src="" alt="" />
+      <div class="weather-info">
+        <span id="weatherTemp" class="weather-temp">--°</span>
+        <span id="weatherDesc" class="weather-desc" data-i18n="Loading weather...">加载中...</span>
+      </div>
+      <span class="weather-city" id="weatherCity"></span>
+    </div>
+    <div class="weather-widget-detail" id="weatherDetail">
+      <div class="weather-detail-row">
+        <span data-i18n="Location">位置</span><span id="weatherLocation">--</span>
+      </div>
+      <div class="weather-detail-row">
+        <span data-i18n="Feels Like">体感</span><span id="weatherFeelsLike">--</span>
+      </div>
+      <div class="weather-detail-row">
+        <span data-i18n="Humidity">湿度</span><span id="weatherHumidity">--</span>
+      </div>
+      <div class="weather-detail-row">
+        <span data-i18n="Wind">风向</span><span id="weatherWind">--</span>
+      </div>
+      <div class="weather-detail-row">
+        <span data-i18n="Visibility">能见度</span><span id="weatherVisibility">--</span>
+      </div>
+      <div class="weather-detail-row">
+        <span data-i18n="Pressure">气压</span><span id="weatherPressure">--</span>
+      </div>
+      <div class="weather-detail-row">
+        <span>UV</span><span id="weatherUV">--</span>
+      </div>
+      <div class="weather-detail-row">
+        <span data-i18n="Sunrise">日出</span><span id="weatherSunrise">--</span>
+      </div>
+      <div class="weather-detail-row">
+        <span data-i18n="Sunset">日落</span><span id="weatherSunset">--</span>
+      </div>
+      <div class="weather-detail-row">
+        <span data-i18n="Moon Phase">月相</span><span id="weatherMoon">--</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Gear Button -->
+  <button id="settingsBtn" class="settings-btn" title="设置">&#9881;</button>
+
+  <!-- ======================== SETTINGS MODAL ======================== -->
+  <div id="settingsOverlay" class="settings-overlay">
+    <div class="settings-panel">
+      <div class="settings-header">
+        <h2 data-i18n="Settings">设置</h2>
+        <button class="settings-close" id="settingsClose">&times;</button>
+      </div>
+
+      <div class="settings-tabs">
+        <button class="settings-tab active" data-tab="tab-engines" data-i18n="Search Engines">搜索引擎</button>
+        <button class="settings-tab" data-tab="tab-bookmarks" data-i18n="Bookmarks">网页导航</button>
+        <button class="settings-tab" data-tab="tab-wallpapers" data-i18n="Wallpapers">壁纸</button>
+        <button class="settings-tab" data-tab="tab-appearance" data-i18n="Appearance">外观</button>
+        <button class="settings-tab" data-tab="tab-system" data-i18n="System">系统</button>
+      </div>
+
+      <div class="settings-body">
+
+        <!-- Tab: Search Engines -->
+        <div id="tab-engines" class="settings-section active">
+          <div class="settings-group">
+            <h3 data-i18n="Search Engine Management">搜索引擎管理</h3>
+            <ul id="settingsEngineList" class="config-list"></ul>
+          </div>
+          <div class="settings-group">
+            <h3 data-i18n="Add Engine">添加引擎</h3>
+            <div class="settings-row">
+              <input type="text" id="newEngineName" data-i18n-placeholder="Name" placeholder="名称" />
+              <input type="text" id="newEngineUrl" data-i18n-placeholder="URL Template (with {query})" placeholder="URL模板 (含{query})" />
+              <button class="btn btn-primary" id="btnAddEngine" data-i18n="Add">添加</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab: Bookmarks -->
+        <div id="tab-bookmarks" class="settings-section">
+          <div class="settings-group">
+            <h3 data-i18n="Web Navigation Links">网页导航链接</h3>
+            <ul id="settingsBookmarkList" class="config-list"></ul>
+          </div>
+          <div class="settings-group">
+            <h3 data-i18n="Add Link">添加链接</h3>
+            <div class="settings-row">
+              <input type="text" id="newBmTitle" data-i18n-placeholder="Title" placeholder="标题" />
+              <input type="url" id="newBmUrl" data-i18n-placeholder="URL" placeholder="网址" />
+            </div>
+            <div class="settings-row" style="margin-top:8px;">
+              <input type="text" id="newBmDesc" data-i18n-placeholder="Description (optional)" placeholder="描述 (可选)" />
+              <button class="btn btn-primary" id="btnAddBookmark" data-i18n="Add">添加</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab: Wallpapers -->
+        <div id="tab-wallpapers" class="settings-section">
+          <div class="settings-group">
+            <h3 data-i18n="Wallpaper Mode">壁纸模式</h3>
+            <div class="settings-row">
+              <label><input type="radio" name="wallpaperMode" value="random" /> <span data-i18n="Random Switch">随机切换</span></label>
+              <label><input type="radio" name="wallpaperMode" value="fixed" /> <span data-i18n="Fix One">固定一张</span></label>
+            </div>
+          </div>
+          <div class="settings-group">
+            <h3 data-i18n="Random Switch Interval">随机切换间隔</h3>
+            <div class="settings-row">
+              <label data-i18n="Interval (hours)">间隔 (小时)</label>
+              <input type="number" id="wallpaperIntervalInput" value="1" min="0.5" max="168" step="0.5" style="width:100px;" />
+              <span style="font-size:0.8rem;opacity:0.6;" data-i18n="0 = only on refresh">0 = 仅在刷新时切换</span>
+            </div>
+          </div>
+          <div class="settings-group">
+            <h3 data-i18n="Wallpaper Gallery">壁纸图库</h3>
+            <div id="wallpaperGallery" class="wallpaper-gallery"></div>
+          </div>
+          <div class="settings-group">
+            <h3 data-i18n="Upload Wallpaper">上传壁纸</h3>
+            <div class="settings-row">
+              <input type="file" id="wallpaperUploadInput" accept="image/*" />
+              <button class="btn btn-primary" id="btnUploadWallpaper" data-i18n="Upload">上传</button>
+            </div>
+          </div>
+          <div class="settings-group">
+            <h3 data-i18n="Glass Effect">玻璃效果</h3>
+            <div class="settings-row">
+              <label data-i18n="Background Opacity">背景透明度</label>
+              <input type="range" id="bgOpacitySlider" min="0" max="50" value="5" />
+              <span class="slider-value" id="bgOpacityVal">0.05</span>
+            </div>
+            <div class="settings-row">
+              <label data-i18n="Blur (px)">模糊度 (px)</label>
+              <input type="range" id="bgBlurSlider" min="0" max="20" value="2" />
+              <span class="slider-value" id="bgBlurVal">2</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab: Appearance -->
+        <div id="tab-appearance" class="settings-section">
+          <div class="settings-group">
+            <h3 data-i18n="Theme">主题</h3>
+            <div class="settings-row">
+              <label data-i18n="Dark Mode">深色模式</label>
+              <select id="darkModeSelect">
+                <option value="light" data-i18n="Light">浅色</option>
+                <option value="dark" data-i18n="Dark">深色</option>
+                <option value="auto" data-i18n="Follow System">跟随系统</option>
+              </select>
+            </div>
+          </div>
+          <div class="settings-group">
+            <h3 data-i18n="Clock">时钟</h3>
+            <div class="settings-row">
+              <label data-i18n="Time Format">时间制式</label>
+              <select id="timeFormatSelect">
+                <option value="24h" data-i18n="24-Hour">24小时制</option>
+                <option value="12h" data-i18n="12-Hour (AM/PM)">12小时制 (AM/PM)</option>
+              </select>
+            </div>
+          </div>
+          <div class="settings-group">
+            <h3 data-i18n="Language">语言</h3>
+            <div class="settings-row">
+              <label data-i18n="Language">语言</label>
+              <select id="languageSelect">
+                <option value="zh" data-i18n="Simplified Chinese">简体中文</option>
+                <option value="en" data-i18n="English">English</option>
+              </select>
+            </div>
+          </div>
+          <div class="settings-group">
+            <h3 data-i18n="Quote Switch Interval">励志语录切换间隔</h3>
+            <div class="settings-row">
+              <label data-i18n="Interval (seconds)">间隔 (秒)</label>
+              <input type="number" id="quoteIntervalInput" value="10" min="3" max="300" style="width:100px;" />
+            </div>
+          </div>
+          <div class="settings-group">
+            <h3 data-i18n="Component Toggles">组件开关</h3>
+            <div class="settings-row"><label data-i18n="Quotes">励志语录</label><label class="toggle-switch"><input type="checkbox" id="toggleQuotes" checked /><span class="toggle-slider"></span></label></div>
+            <div class="settings-row"><label data-i18n="Music Player">音乐播放器</label><label class="toggle-switch"><input type="checkbox" id="toggleMusic" checked /><span class="toggle-slider"></span></label></div>
+            <div class="settings-row"><label data-i18n="Weather">天气组件</label><label class="toggle-switch"><input type="checkbox" id="toggleWeather" checked /><span class="toggle-slider"></span></label></div>
+            <div class="settings-row"><label data-i18n="Memo">便签挂件</label><label class="toggle-switch"><input type="checkbox" id="toggleMemo" checked /><span class="toggle-slider"></span></label></div>
+            <div class="settings-row"><label data-i18n="Web Navigation">网页导航</label><label class="toggle-switch"><input type="checkbox" id="toggleBookmarks" checked /><span class="toggle-slider"></span></label></div>
+          </div>
+        </div>
+
+        <!-- Tab: System -->
+        <div id="tab-system" class="settings-section">
+          <div class="settings-group">
+            <h3 data-i18n="Quote Management">励志语录管理</h3>
+            <textarea id="quotesTextarea" style="width:100%;min-height:120px;"
+                      data-i18n-placeholder="Separate quotes with blank lines..." placeholder="每条语录用空行分隔..."></textarea>
+            <button class="btn btn-primary" id="btnSaveQuotes" style="margin-top:8px;" data-i18n="Save Quotes">保存语录</button>
+          </div>
+          <div class="settings-group">
+            <h3 data-i18n="Weather Settings">天气设置</h3>
+            <div class="settings-row">
+              <label data-i18n="City Lock">城市锁定</label>
+              <input type="text" id="weatherCityInput" data-i18n-placeholder="Leave empty for auto IP location" placeholder="留空则自动IP定位" />
+              <button class="btn btn-secondary" id="btnLockCity" data-i18n="Lock">锁定</button>
+              <button class="btn btn-secondary" id="btnUnlockCity" data-i18n="Unlock">解除锁定</button>
+            </div>
+          </div>
+          <div class="settings-group">
+            <h3 data-i18n="Music Settings">音乐播放器设置</h3>
+            <div class="settings-row"><label data-i18n="Playlist ID">歌单ID</label><input type="text" id="musicIdInput" placeholder="网易云歌单ID" /></div>
+            <div class="settings-row"><label data-i18n="Server">服务器</label><select id="musicServerSelect"><option value="netease">网易云</option><option value="tencent">QQ音乐</option><option value="kugou">酷狗</option><option value="xiami">虾米</option><option value="baidu">百度</option></select></div>
+            <div class="settings-row"><label data-i18n="Type">类型</label><select id="musicTypeSelect"><option value="playlist" data-i18n="Playlist">歌单</option><option value="song" data-i18n="Song">单曲</option><option value="album" data-i18n="Album">专辑</option></select></div>
+            <div class="settings-row"><label data-i18n="Play Order">播放顺序</label><select id="musicOrderSelect"><option value="random" data-i18n="Random">随机</option><option value="list" data-i18n="List">列表</option></select></div>
+            <div class="settings-row"><label data-i18n="Volume">音量</label><input type="range" id="musicVolumeSlider" min="0" max="1" step="0.1" value="0.7" /><span class="slider-value" id="musicVolumeVal">0.7</span></div>
+            <div class="settings-row"><label data-i18n="Theme Color">主题色</label><input type="color" id="musicThemeInput" value="#2EA7E0" /></div>
+            <div class="settings-row"><label data-i18n="Preload">预加载</label><select id="musicPreloadSelect"><option value="auto" data-i18n="Auto">自动</option><option value="none" data-i18n="None (no preload)">不预加载</option><option value="metadata" data-i18n="Metadata Only">仅元数据</option></select></div>
+            <div class="settings-row"><label data-i18n="Auto Play">自动播放</label><label class="toggle-switch"><input type="checkbox" id="musicAutoplayCheck" /><span class="toggle-slider"></span></label></div>
+            <div class="settings-row"><label data-i18n="Fixed Position">固定位置</label><label class="toggle-switch"><input type="checkbox" id="musicFixedCheck" checked /><span class="toggle-slider"></span></label></div>
+            <div class="settings-row"><label data-i18n="Fold Playlist">折叠歌单</label><label class="toggle-switch"><input type="checkbox" id="musicListFoldedCheck" checked /><span class="toggle-slider"></span></label></div>
+            <div style="margin-top:12px;">
+              <button class="btn btn-primary" id="btnSaveMusic" data-i18n="Save Music Settings">保存音乐设置</button>
+              <button class="btn btn-secondary" id="btnRestoreMusicDefaults" data-i18n="Restore Defaults">恢复默认值</button>
+            </div>
+          </div>
+          <div class="settings-group">
+            <h3 data-i18n="Data Management">数据管理</h3>
+            <button class="btn btn-primary" id="btnExportBackup" data-i18n="Export Backup (ZIP)">导出备份 (ZIP)</button>
+          </div>
+          <div class="settings-group">
+            <h3 data-i18n="Feedback &amp; Support">反馈与支持</h3>
+            <a href="https://github.com/pixelpulse0x1" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+              GitHub
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast"></div>
+
+  <!-- Music Player -->
+  <div id="my-aplayer" class="aplayer"
+       data-id="6895409634" data-server="netease" data-type="playlist"
+       data-fixed="true" data-autoplay="false" data-order="random"
+       data-volume="0.7" data-theme="#2EA7E0" data-preload="auto"
+       data-listFolded="true"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/meting@1.2.0/dist/Meting.min.js"></script>
+  <script src="/static/js/app.js"></script>
+  <script src="/static/js/settings.js"></script>
+  <script src="/static/js/memo.js"></script>
+</body>
+</html>
