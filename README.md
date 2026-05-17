@@ -23,7 +23,7 @@
 
 - **Multi-engine search** — 8 built-in search engines (Google, Bing, Baidu, Zhihu, Bilibili…), selectable with one click. Add / delete / reorder from settings.
 - **Bookmarks panel** — Web navigation links shown as a clean table at the bottom. Add / edit / delete from settings.
-- **Weather widget** — Bottom-right glass-morphism panel. Click to expand details (feels like, humidity, wind, visibility, pressure, UV, sunrise, sunset, moon phase). Fetches directly from [wttr.in](https://wttr.in) in the browser.
+- **Weather widget** — Bottom-right glass-morphism panel. Click to expand details (feels like, humidity, wind, visibility, pressure, UV, sunrise, sunset, moon phase). Fetches directly from [wttr.in](https://wttr.in) in the browser.  ==When filling in the weather location, you need to enter the English name of the region.==
 - **Memo** — Sticky note with 1-second debounced auto-save.
 - **Wallpaper system** — 16 default wallpapers + user upload. Random rotation with configurable interval. Fixed mode. Delete management.
 - **Music player** — Embedded APlayer with NetEase / QQ / Kugou support. Fully configurable (playlist ID, server, order, volume, theme…).
@@ -144,7 +144,7 @@ All modern browsers (Chrome, Firefox, Safari, Edge).
 
 - **多引擎聚合搜索** — 内置 8 个搜索引擎（Google / Bing / 百度 / 知乎 / bilibili…），一键多站搜索。可在设置中增删改、排序、设为默认。
 - **网页导航** — 底部表格形式展示书签链接，支持增删改。
-- **天气桌面挂件** — 右下角玻璃拟态面板，点击展开详情（体感温度、湿度、风向、能见度、气压、UV、日出日落、月相）。浏览器端直连 [wttr.in](https://wttr.in)。
+- **天气桌面挂件** — 右下角玻璃拟态面板，点击展开详情（体感温度、湿度、风向、能见度、气压、UV、日出日落、月相）。浏览器端直连 [wttr.in](https://wttr.in)。==天气位置填写时，需要填入地区的英文名称== 
 - **便签** — 1 秒防抖自动保存，随手记录。
 - **壁纸系统** — 16 张默认壁纸 + 用户上传，随机轮换间隔可设，固定模式，删除管理。
 - **音乐播放器** — 内嵌 APlayer，支持网易云 / QQ / 酷狗，歌单 ID、服务器、播放顺序、音量、主题色全可配。
