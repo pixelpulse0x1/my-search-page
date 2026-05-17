@@ -17,6 +17,8 @@
 
 ---
 
+RAM：24MB
+
 ## English
 
 ### Features
